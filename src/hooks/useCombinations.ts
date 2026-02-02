@@ -1,6 +1,6 @@
-import { useState, useEffect, useRef, useCallback } from 'react';
+import { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import { useTimerContext } from '../context/TimerContext';
-import { ALL_COMBINATIONS } from '../utils/constants';
+import { COMBINATIONS } from '../utils/constants';
 
 export function useCombinations() {
   const { state, settings } = useTimerContext();
@@ -11,9 +11,20 @@ export function useCombinations() {
   const prevRoundRef = useRef(state.currentRound);
   const prevPhaseRef = useRef(state.phase);
 
+  // Build filtered combo list based on enabled groups
+  const availableCombos = useMemo(() => {
+    const combos: string[] = [];
+    if (settings.comboGroups.basic) combos.push(...COMBINATIONS.basic);
+    if (settings.comboGroups.standard) combos.push(...COMBINATIONS.standard);
+    if (settings.comboGroups.withDefense) combos.push(...COMBINATIONS.withDefense);
+    if (settings.comboGroups.long) combos.push(...COMBINATIONS.long);
+    return combos;
+  }, [settings.comboGroups]);
+
   const showCombo = useCallback(() => {
-    const randomIndex = Math.floor(Math.random() * ALL_COMBINATIONS.length);
-    setCurrentCombo(ALL_COMBINATIONS[randomIndex]);
+    if (availableCombos.length === 0) return;
+    const randomIndex = Math.floor(Math.random() * availableCombos.length);
+    setCurrentCombo(availableCombos[randomIndex]);
     setIsVisible(true);
 
     // Hide after 2 seconds
@@ -23,7 +34,7 @@ export function useCombinations() {
     timeoutRef.current = window.setTimeout(() => {
       setIsVisible(false);
     }, 2000);
-  }, []);
+  }, [availableCombos]);
 
   useEffect(() => {
     // Reset when entering a new round
