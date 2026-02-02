@@ -1,6 +1,7 @@
 export type TimerStatus = 'idle' | 'running' | 'paused';
 export type Phase = 'round' | 'rest';
 export type Theme = 'dark' | 'light';
+export type ComboGroup = 'basic' | 'standard' | 'withDefense' | 'long';
 
 export interface TimerState {
   status: TimerStatus;
@@ -16,6 +17,7 @@ export interface TimerState {
 export interface Settings {
   combosEnabled: boolean;
   comboInterval: number;
+  comboGroups: Record<ComboGroup, boolean>;
   warningThreshold: number;
   theme: Theme;
   volume: number;
@@ -35,6 +37,7 @@ export type TimerAction =
 export type SettingsAction =
   | { type: 'TOGGLE_COMBOS' }
   | { type: 'SET_COMBO_INTERVAL'; payload: number }
+  | { type: 'TOGGLE_COMBO_GROUP'; payload: ComboGroup }
   | { type: 'SET_WARNING_THRESHOLD'; payload: number }
   | { type: 'SET_THEME'; payload: Theme }
   | { type: 'SET_VOLUME'; payload: number };

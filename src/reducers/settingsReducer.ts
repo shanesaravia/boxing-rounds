@@ -4,6 +4,12 @@ import { DEFAULT_COMBO_INTERVAL, DEFAULT_WARNING_THRESHOLD } from '../utils/cons
 export const initialSettings: Settings = {
   combosEnabled: false,
   comboInterval: DEFAULT_COMBO_INTERVAL,
+  comboGroups: {
+    basic: true,
+    standard: true,
+    withDefense: true,
+    long: true,
+  },
   warningThreshold: DEFAULT_WARNING_THRESHOLD,
   theme: 'dark',
   volume: 0.7,
@@ -16,6 +22,15 @@ export function settingsReducer(state: Settings, action: SettingsAction): Settin
 
     case 'SET_COMBO_INTERVAL':
       return { ...state, comboInterval: action.payload };
+
+    case 'TOGGLE_COMBO_GROUP':
+      return {
+        ...state,
+        comboGroups: {
+          ...state.comboGroups,
+          [action.payload]: !state.comboGroups[action.payload],
+        },
+      };
 
     case 'SET_WARNING_THRESHOLD':
       return { ...state, warningThreshold: action.payload };

@@ -1,4 +1,4 @@
-import { Settings, X } from 'lucide-react';
+import { Settings, X, ChevronDown, ChevronUp } from 'lucide-react';
 import { useState } from 'react';
 import { clsx } from 'clsx';
 import { useTimerContext } from '../context/TimerContext';
@@ -16,8 +16,27 @@ import {
   MAX_WARNING_THRESHOLD,
 } from '../utils/constants';
 
+import type { ComboGroup } from '../types/timer';
+
+const PUNCH_LEGEND = [
+  { number: '1', name: 'Jab' },
+  { number: '2', name: 'Cross' },
+  { number: '3', name: 'Lead Hook' },
+  { number: '4', name: 'Rear Hook' },
+  { number: '5', name: 'Lead Uppercut' },
+  { number: '6', name: 'Rear Uppercut' },
+];
+
+const COMBO_GROUPS: { key: ComboGroup; label: string; description: string }[] = [
+  { key: 'basic', label: 'Basic', description: '1, 2, 1-1, 1-2' },
+  { key: 'standard', label: 'Standard', description: '1-2-3, 2-3-2, etc.' },
+  { key: 'withDefense', label: 'With Defense', description: 'Slip, Roll combos' },
+  { key: 'long', label: 'Long', description: '5+ punch combos' },
+];
+
 export function SettingsPanel() {
   const [isOpen, setIsOpen] = useState(false);
+  const [showLegend, setShowLegend] = useState(false);
   const { state, settings, dispatch, dispatchSettings } = useTimerContext();
 
   const isDisabled = state.status !== 'idle';
@@ -38,8 +57,8 @@ export function SettingsPanel() {
             className="absolute inset-0 bg-black/50 backdrop-blur-sm"
             onClick={() => setIsOpen(false)}
           />
-          <div className="relative bg-white dark:bg-gray-800 rounded-2xl shadow-xl w-full max-w-md p-6">
-            <div className="flex items-center justify-between mb-6">
+          <div className="relative bg-white dark:bg-gray-800 rounded-2xl shadow-xl w-full max-w-md max-h-[90vh] flex flex-col">
+            <div className="flex items-center justify-between p-6 pb-0">
               <h2 className="text-xl font-bold text-gray-900 dark:text-white">
                 Settings
               </h2>
@@ -51,13 +70,14 @@ export function SettingsPanel() {
               </button>
             </div>
 
-            {isDisabled && (
-              <div className="mb-4 p-3 bg-amber-100 dark:bg-amber-900/30 text-amber-800 dark:text-amber-200 rounded-lg text-sm">
-                Timer settings can only be changed when the timer is stopped.
-              </div>
-            )}
+            <div className="flex-1 overflow-y-auto p-6 pt-4">
+              {isDisabled && (
+                <div className="mb-4 p-3 bg-amber-100 dark:bg-amber-900/30 text-amber-800 dark:text-amber-200 rounded-lg text-sm">
+                  Timer settings can only be changed when the timer is stopped.
+                </div>
+              )}
 
-            <div className="space-y-6">
+              <div className="space-y-6">
               {/* Number of Rounds */}
               <div>
                 <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
@@ -181,29 +201,96 @@ export function SettingsPanel() {
 
               {/* Combo Interval (only shown if combos enabled) */}
               {settings.combosEnabled && (
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                    Combo Interval: {formatDuration(settings.comboInterval)}
-                  </label>
-                  <input
-                    type="range"
-                    min={MIN_COMBO_INTERVAL}
-                    max={MAX_COMBO_INTERVAL}
-                    step={5}
-                    value={settings.comboInterval}
-                    onChange={(e) =>
-                      dispatchSettings({
-                        type: 'SET_COMBO_INTERVAL',
-                        payload: Number(e.target.value),
-                      })
-                    }
-                    className="w-full h-2 rounded-lg appearance-none cursor-pointer bg-gray-200 dark:bg-gray-700"
-                  />
-                  <div className="flex justify-between text-xs text-gray-500 mt-1">
-                    <span>{MIN_COMBO_INTERVAL}s</span>
-                    <span>{formatDuration(MAX_COMBO_INTERVAL)}</span>
+                <>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                      Combo Interval: {formatDuration(settings.comboInterval)}
+                    </label>
+                    <input
+                      type="range"
+                      min={MIN_COMBO_INTERVAL}
+                      max={MAX_COMBO_INTERVAL}
+                      step={5}
+                      value={settings.comboInterval}
+                      onChange={(e) =>
+                        dispatchSettings({
+                          type: 'SET_COMBO_INTERVAL',
+                          payload: Number(e.target.value),
+                        })
+                      }
+                      className="w-full h-2 rounded-lg appearance-none cursor-pointer bg-gray-200 dark:bg-gray-700"
+                    />
+                    <div className="flex justify-between text-xs text-gray-500 mt-1">
+                      <span>{MIN_COMBO_INTERVAL}s</span>
+                      <span>{formatDuration(MAX_COMBO_INTERVAL)}</span>
+                    </div>
                   </div>
-                </div>
+
+                  {/* Combo Groups */}
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">
+                      Combo Types
+                    </label>
+                    <div className="space-y-2">
+                      {COMBO_GROUPS.map(({ key, label, description }) => (
+                        <label
+                          key={key}
+                          className="flex items-center gap-3 cursor-pointer"
+                        >
+                          <input
+                            type="checkbox"
+                            checked={settings.comboGroups[key]}
+                            onChange={() =>
+                              dispatchSettings({ type: 'TOGGLE_COMBO_GROUP', payload: key })
+                            }
+                            className="w-4 h-4 rounded border-gray-300 text-green-600 focus:ring-green-500 dark:border-gray-600 dark:bg-gray-700"
+                          />
+                          <div className="flex-1">
+                            <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                              {label}
+                            </span>
+                            <span className="text-xs text-gray-500 dark:text-gray-500 ml-2">
+                              {description}
+                            </span>
+                          </div>
+                        </label>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Punch Number Legend */}
+                  <div className="border-t border-gray-200 dark:border-gray-700 pt-4">
+                    <button
+                      onClick={() => setShowLegend(!showLegend)}
+                      className="flex items-center justify-between w-full text-sm font-medium text-gray-700 dark:text-gray-300"
+                    >
+                      <span>Punch Number Legend</span>
+                      {showLegend ? (
+                        <ChevronUp className="w-4 h-4" />
+                      ) : (
+                        <ChevronDown className="w-4 h-4" />
+                      )}
+                    </button>
+                    {showLegend && (
+                      <div className="mt-3 grid grid-cols-2 gap-2">
+                        {PUNCH_LEGEND.map(({ number, name }) => (
+                          <div
+                            key={number}
+                            className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400"
+                          >
+                            <span className="font-mono font-bold text-gray-900 dark:text-white w-4">
+                              {number}
+                            </span>
+                            <span>= {name}</span>
+                          </div>
+                        ))}
+                        <div className="col-span-2 mt-2 text-xs text-gray-500 dark:text-gray-500">
+                          Slip & Roll = Defensive movements
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                </>
               )}
 
               {/* Warning Threshold */}
@@ -229,6 +316,7 @@ export function SettingsPanel() {
                   <span>{MIN_WARNING_THRESHOLD}s</span>
                   <span>{formatDuration(MAX_WARNING_THRESHOLD)}</span>
                 </div>
+              </div>
               </div>
             </div>
           </div>
