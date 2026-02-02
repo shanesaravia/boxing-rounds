@@ -1,4 +1,4 @@
-import { Settings, X } from 'lucide-react';
+import { Settings, X, ChevronDown, ChevronUp } from 'lucide-react';
 import { useState } from 'react';
 import { clsx } from 'clsx';
 import { useTimerContext } from '../context/TimerContext';
@@ -16,8 +16,18 @@ import {
   MAX_WARNING_THRESHOLD,
 } from '../utils/constants';
 
+const PUNCH_LEGEND = [
+  { number: '1', name: 'Jab' },
+  { number: '2', name: 'Cross' },
+  { number: '3', name: 'Lead Hook' },
+  { number: '4', name: 'Rear Hook' },
+  { number: '5', name: 'Lead Uppercut' },
+  { number: '6', name: 'Rear Uppercut' },
+];
+
 export function SettingsPanel() {
   const [isOpen, setIsOpen] = useState(false);
+  const [showLegend, setShowLegend] = useState(false);
   const { state, settings, dispatch, dispatchSettings } = useTimerContext();
 
   const isDisabled = state.status !== 'idle';
@@ -181,29 +191,64 @@ export function SettingsPanel() {
 
               {/* Combo Interval (only shown if combos enabled) */}
               {settings.combosEnabled && (
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                    Combo Interval: {formatDuration(settings.comboInterval)}
-                  </label>
-                  <input
-                    type="range"
-                    min={MIN_COMBO_INTERVAL}
-                    max={MAX_COMBO_INTERVAL}
-                    step={5}
-                    value={settings.comboInterval}
-                    onChange={(e) =>
-                      dispatchSettings({
-                        type: 'SET_COMBO_INTERVAL',
-                        payload: Number(e.target.value),
-                      })
-                    }
-                    className="w-full h-2 rounded-lg appearance-none cursor-pointer bg-gray-200 dark:bg-gray-700"
-                  />
-                  <div className="flex justify-between text-xs text-gray-500 mt-1">
-                    <span>{MIN_COMBO_INTERVAL}s</span>
-                    <span>{formatDuration(MAX_COMBO_INTERVAL)}</span>
+                <>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                      Combo Interval: {formatDuration(settings.comboInterval)}
+                    </label>
+                    <input
+                      type="range"
+                      min={MIN_COMBO_INTERVAL}
+                      max={MAX_COMBO_INTERVAL}
+                      step={5}
+                      value={settings.comboInterval}
+                      onChange={(e) =>
+                        dispatchSettings({
+                          type: 'SET_COMBO_INTERVAL',
+                          payload: Number(e.target.value),
+                        })
+                      }
+                      className="w-full h-2 rounded-lg appearance-none cursor-pointer bg-gray-200 dark:bg-gray-700"
+                    />
+                    <div className="flex justify-between text-xs text-gray-500 mt-1">
+                      <span>{MIN_COMBO_INTERVAL}s</span>
+                      <span>{formatDuration(MAX_COMBO_INTERVAL)}</span>
+                    </div>
                   </div>
-                </div>
+
+                  {/* Punch Number Legend */}
+                  <div className="border-t border-gray-200 dark:border-gray-700 pt-4">
+                    <button
+                      onClick={() => setShowLegend(!showLegend)}
+                      className="flex items-center justify-between w-full text-sm font-medium text-gray-700 dark:text-gray-300"
+                    >
+                      <span>Punch Number Legend</span>
+                      {showLegend ? (
+                        <ChevronUp className="w-4 h-4" />
+                      ) : (
+                        <ChevronDown className="w-4 h-4" />
+                      )}
+                    </button>
+                    {showLegend && (
+                      <div className="mt-3 grid grid-cols-2 gap-2">
+                        {PUNCH_LEGEND.map(({ number, name }) => (
+                          <div
+                            key={number}
+                            className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400"
+                          >
+                            <span className="font-mono font-bold text-gray-900 dark:text-white w-4">
+                              {number}
+                            </span>
+                            <span>= {name}</span>
+                          </div>
+                        ))}
+                        <div className="col-span-2 mt-2 text-xs text-gray-500 dark:text-gray-500">
+                          Slip & Roll = Defensive movements
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                </>
               )}
 
               {/* Warning Threshold */}
