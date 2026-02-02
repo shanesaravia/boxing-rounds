@@ -2,7 +2,7 @@
 
 A modern, feature-rich boxing training timer built with React and TypeScript. Perfect for boxing, MMA, kickboxing, or any interval-based training.
 
-![Boxing Rounds Timer Screenshot](./screenshot.png)
+<img width="351" height="761" alt="image" src="https://github.com/user-attachments/assets/9f4379e1-e485-4795-bcff-c45247e808bd" />
 
 ## Features
 
