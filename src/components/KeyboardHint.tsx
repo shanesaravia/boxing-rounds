@@ -1,12 +1,12 @@
-import { useTimerContext } from '../context/TimerContext';
+import { useTimerStore } from '../stores/timerStore';
 
 export function KeyboardHint() {
-  const { state } = useTimerContext();
+  const status = useTimerStore((state) => state.status);
 
   const hint =
-    state.status === 'idle'
+    status === 'idle'
       ? 'Press SPACE to start'
-      : state.status === 'running'
+      : status === 'running'
         ? 'Press SPACE to pause'
         : 'Press SPACE to resume';
 

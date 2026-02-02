@@ -1,5 +1,5 @@
 import { useCallback, useRef, useEffect } from 'react';
-import { useTimerContext } from '../context/TimerContext';
+import { useTimerStore } from '../stores/timerStore';
 
 // Create audio context for generating sounds
 function createBellSound(audioContext: AudioContext, volume: number): void {
@@ -37,10 +37,19 @@ function createWarningBeep(audioContext: AudioContext, volume: number): void {
 }
 
 export function useSound() {
-  const { state, settings, dispatch } = useTimerContext();
+  const status = useTimerStore((state) => state.status);
+  const phase = useTimerStore((state) => state.phase);
+  const currentRound = useTimerStore((state) => state.currentRound);
+  const timeRemaining = useTimerStore((state) => state.timeRemaining);
+  const roundDuration = useTimerStore((state) => state.roundDuration);
+  const warningPlayed = useTimerStore((state) => state.warningPlayed);
+  const warningThreshold = useTimerStore((state) => state.warningThreshold);
+  const volume = useTimerStore((state) => state.volume);
+  const setWarningPlayed = useTimerStore((state) => state.setWarningPlayed);
+
   const audioContextRef = useRef<AudioContext | null>(null);
-  const prevPhaseRef = useRef(state.phase);
-  const prevTimeRef = useRef(state.timeRemaining);
+  const prevPhaseRef = useRef(phase);
+  const prevTimeRef = useRef(timeRemaining);
 
   const getAudioContext = useCallback(() => {
     if (!audioContextRef.current) {
@@ -52,47 +61,47 @@ export function useSound() {
   const playBell = useCallback(() => {
     const ctx = getAudioContext();
     // Play bell sound twice for round end
-    createBellSound(ctx, settings.volume);
-    setTimeout(() => createBellSound(ctx, settings.volume), 300);
-  }, [getAudioContext, settings.volume]);
+    createBellSound(ctx, volume);
+    setTimeout(() => createBellSound(ctx, volume), 300);
+  }, [getAudioContext, volume]);
 
   const playWarning = useCallback(() => {
     const ctx = getAudioContext();
-    createWarningBeep(ctx, settings.volume);
-  }, [getAudioContext, settings.volume]);
+    createWarningBeep(ctx, volume);
+  }, [getAudioContext, volume]);
 
   // Handle phase transitions
   useEffect(() => {
-    if (state.status !== 'running') return;
+    if (status !== 'running') return;
 
     // Phase changed - play bell
-    if (prevPhaseRef.current !== state.phase) {
+    if (prevPhaseRef.current !== phase) {
       playBell();
-      prevPhaseRef.current = state.phase;
+      prevPhaseRef.current = phase;
     }
 
     // Check for warning threshold
     if (
-      state.timeRemaining === settings.warningThreshold &&
-      prevTimeRef.current !== settings.warningThreshold &&
-      !state.warningPlayed
+      timeRemaining === warningThreshold &&
+      prevTimeRef.current !== warningThreshold &&
+      !warningPlayed
     ) {
       playWarning();
-      dispatch({ type: 'SET_WARNING_PLAYED', payload: true });
+      setWarningPlayed(true);
     }
 
-    prevTimeRef.current = state.timeRemaining;
-  }, [state, playBell, playWarning, dispatch]);
+    prevTimeRef.current = timeRemaining;
+  }, [status, phase, timeRemaining, warningThreshold, warningPlayed, playBell, playWarning, setWarningPlayed]);
 
   // Play bell when workout starts
   useEffect(() => {
-    if (state.status === 'running' && state.currentRound === 1 && state.phase === 'round') {
+    if (status === 'running' && currentRound === 1 && phase === 'round') {
       // Only play on initial start
-      if (state.timeRemaining === state.roundDuration) {
+      if (timeRemaining === roundDuration) {
         playBell();
       }
     }
-  }, [state.status, state.currentRound, state.phase, state.timeRemaining, state.roundDuration, playBell]);
+  }, [status, currentRound, phase, timeRemaining, roundDuration, playBell]);
 
   // Cleanup
   useEffect(() => {

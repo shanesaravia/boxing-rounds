@@ -1,4 +1,5 @@
-import { TimerProvider } from './context/TimerContext';
+import { useEffect } from 'react';
+import { useTimerStore } from './stores/timerStore';
 import { Layout } from './components/Layout';
 import { TimerDisplay } from './components/TimerDisplay';
 import { Controls } from './components/Controls';
@@ -8,7 +9,18 @@ import { useTimer } from './hooks/useTimer';
 import { useKeyboard } from './hooks/useKeyboard';
 import { useSound } from './hooks/useSound';
 
-function TimerApp() {
+function App() {
+  const theme = useTimerStore((state) => state.theme);
+
+  // Apply theme to document
+  useEffect(() => {
+    if (theme === 'dark') {
+      document.documentElement.classList.add('dark');
+    } else {
+      document.documentElement.classList.remove('dark');
+    }
+  }, [theme]);
+
   useTimer();
   useKeyboard();
   useSound();
@@ -22,14 +34,6 @@ function TimerApp() {
       </div>
       <CombinationPrompt />
     </Layout>
-  );
-}
-
-function App() {
-  return (
-    <TimerProvider>
-      <TimerApp />
-    </TimerProvider>
   );
 }
 

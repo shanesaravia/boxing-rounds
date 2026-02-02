@@ -1,8 +1,9 @@
 import { useEffect, useCallback } from 'react';
-import { useTimerContext } from '../context/TimerContext';
+import { useTimerStore } from '../stores/timerStore';
 
 export function useKeyboard() {
-  const { toggle, reset } = useTimerContext();
+  const toggle = useTimerStore((state) => state.toggle);
+  const reset = useTimerStore((state) => state.reset);
 
   const handleKeyDown = useCallback(
     (event: KeyboardEvent) => {
