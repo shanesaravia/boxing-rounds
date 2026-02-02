@@ -1,12 +1,16 @@
 import { Play, Pause, RotateCcw } from 'lucide-react';
-import { useTimerContext } from '../context/TimerContext';
+import { useTimerStore } from '../stores/timerStore';
 import { Button } from './Button';
 
 export function Controls() {
-  const { state, toggle, reset } = useTimerContext();
+  const status = useTimerStore((state) => state.status);
+  const currentRound = useTimerStore((state) => state.currentRound);
+  const timeRemaining = useTimerStore((state) => state.timeRemaining);
+  const toggle = useTimerStore((state) => state.toggle);
+  const reset = useTimerStore((state) => state.reset);
 
-  const isRunning = state.status === 'running';
-  const isComplete = state.status === 'idle' && state.timeRemaining === 0;
+  const isRunning = status === 'running';
+  const isComplete = status === 'idle' && timeRemaining === 0;
 
   return (
     <div className="flex items-center gap-4">
@@ -33,7 +37,7 @@ export function Controls() {
         size="lg"
         onClick={reset}
         aria-label="Reset"
-        disabled={state.status === 'idle' && state.currentRound === 1}
+        disabled={status === 'idle' && currentRound === 1}
       >
         <RotateCcw className="w-6 h-6" />
         Reset

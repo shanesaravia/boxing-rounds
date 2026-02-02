@@ -1,14 +1,15 @@
 import { useEffect, useRef } from 'react';
-import { useTimerContext } from '../context/TimerContext';
+import { useTimerStore } from '../stores/timerStore';
 
 export function useTimer() {
-  const { state, dispatch } = useTimerContext();
+  const status = useTimerStore((state) => state.status);
+  const tick = useTimerStore((state) => state.tick);
   const intervalRef = useRef<number | null>(null);
 
   useEffect(() => {
-    if (state.status === 'running') {
+    if (status === 'running') {
       intervalRef.current = window.setInterval(() => {
-        dispatch({ type: 'TICK' });
+        tick();
       }, 1000);
     } else {
       if (intervalRef.current) {
@@ -22,7 +23,5 @@ export function useTimer() {
         clearInterval(intervalRef.current);
       }
     };
-  }, [state.status, dispatch]);
-
-  return state;
+  }, [status, tick]);
 }

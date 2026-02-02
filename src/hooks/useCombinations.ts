@@ -1,25 +1,33 @@
 import { useState, useEffect, useRef, useCallback, useMemo } from 'react';
-import { useTimerContext } from '../context/TimerContext';
+import { useTimerStore } from '../stores/timerStore';
 import { COMBINATIONS } from '../utils/constants';
 
 export function useCombinations() {
-  const { state, settings } = useTimerContext();
+  const status = useTimerStore((state) => state.status);
+  const phase = useTimerStore((state) => state.phase);
+  const currentRound = useTimerStore((state) => state.currentRound);
+  const timeRemaining = useTimerStore((state) => state.timeRemaining);
+  const roundDuration = useTimerStore((state) => state.roundDuration);
+  const combosEnabled = useTimerStore((state) => state.combosEnabled);
+  const comboInterval = useTimerStore((state) => state.comboInterval);
+  const comboGroups = useTimerStore((state) => state.comboGroups);
+
   const [currentCombo, setCurrentCombo] = useState<string | null>(null);
   const [isVisible, setIsVisible] = useState(false);
   const lastComboTimeRef = useRef(-1); // -1 means no combo shown yet this round
   const timeoutRef = useRef<number | null>(null);
-  const prevRoundRef = useRef(state.currentRound);
-  const prevPhaseRef = useRef(state.phase);
+  const prevRoundRef = useRef(currentRound);
+  const prevPhaseRef = useRef(phase);
 
   // Build filtered combo list based on enabled groups
   const availableCombos = useMemo(() => {
     const combos: string[] = [];
-    if (settings.comboGroups.basic) combos.push(...COMBINATIONS.basic);
-    if (settings.comboGroups.standard) combos.push(...COMBINATIONS.standard);
-    if (settings.comboGroups.withDefense) combos.push(...COMBINATIONS.withDefense);
-    if (settings.comboGroups.long) combos.push(...COMBINATIONS.long);
+    if (comboGroups.basic) combos.push(...COMBINATIONS.basic);
+    if (comboGroups.standard) combos.push(...COMBINATIONS.standard);
+    if (comboGroups.withDefense) combos.push(...COMBINATIONS.withDefense);
+    if (comboGroups.long) combos.push(...COMBINATIONS.long);
     return combos;
-  }, [settings.comboGroups]);
+  }, [comboGroups]);
 
   const showCombo = useCallback(() => {
     if (availableCombos.length === 0) return;
@@ -39,26 +47,26 @@ export function useCombinations() {
   useEffect(() => {
     // Reset when entering a new round
     if (
-      state.currentRound !== prevRoundRef.current ||
-      state.phase !== prevPhaseRef.current
+      currentRound !== prevRoundRef.current ||
+      phase !== prevPhaseRef.current
     ) {
-      prevRoundRef.current = state.currentRound;
-      prevPhaseRef.current = state.phase;
+      prevRoundRef.current = currentRound;
+      prevPhaseRef.current = phase;
       lastComboTimeRef.current = -1; // Reset for new round
     }
 
     // Only show combos during active rounds
     if (
-      state.status !== 'running' ||
-      state.phase !== 'round' ||
-      !settings.combosEnabled
+      status !== 'running' ||
+      phase !== 'round' ||
+      !combosEnabled
     ) {
       setIsVisible(false);
       return;
     }
 
     // Calculate elapsed time in current round
-    const elapsedTime = state.roundDuration - state.timeRemaining;
+    const elapsedTime = roundDuration - timeRemaining;
 
     // Show combo immediately when round starts (no combo shown yet this round)
     if (lastComboTimeRef.current === -1) {
@@ -68,20 +76,20 @@ export function useCombinations() {
     }
 
     // Check if it's time to show a new combo based on interval
-    if (elapsedTime >= lastComboTimeRef.current + settings.comboInterval) {
+    if (elapsedTime >= lastComboTimeRef.current + comboInterval) {
       lastComboTimeRef.current = elapsedTime;
       showCombo();
     }
-  }, [state, settings.combosEnabled, settings.comboInterval, showCombo]);
+  }, [status, phase, currentRound, timeRemaining, roundDuration, combosEnabled, comboInterval, showCombo]);
 
   // Reset when timer resets
   useEffect(() => {
-    if (state.status === 'idle') {
+    if (status === 'idle') {
       lastComboTimeRef.current = -1;
       setIsVisible(false);
       setCurrentCombo(null);
     }
-  }, [state.status]);
+  }, [status]);
 
   // Cleanup
   useEffect(() => {
