@@ -36,6 +36,23 @@ function createWarningBeep(audioContext: AudioContext, volume: number): void {
   oscillator.stop(audioContext.currentTime + 0.15);
 }
 
+function createComboSound(audioContext: AudioContext, volume: number): void {
+  const oscillator = audioContext.createOscillator();
+  const gainNode = audioContext.createGain();
+
+  oscillator.connect(gainNode);
+  gainNode.connect(audioContext.destination);
+
+  oscillator.frequency.value = 600;
+  oscillator.type = 'triangle';
+
+  gainNode.gain.setValueAtTime(volume * 0.5, audioContext.currentTime);
+  gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.1);
+
+  oscillator.start(audioContext.currentTime);
+  oscillator.stop(audioContext.currentTime + 0.1);
+}
+
 export function useSound() {
   const status = useTimerStore((state) => state.status);
   const phase = useTimerStore((state) => state.phase);
@@ -68,6 +85,11 @@ export function useSound() {
   const playWarning = useCallback(() => {
     const ctx = getAudioContext();
     createWarningBeep(ctx, volume);
+  }, [getAudioContext, volume]);
+
+  const playComboAlert = useCallback(() => {
+    const ctx = getAudioContext();
+    createComboSound(ctx, volume);
   }, [getAudioContext, volume]);
 
   // Handle phase transitions
@@ -112,5 +134,5 @@ export function useSound() {
     };
   }, []);
 
-  return { playBell, playWarning };
+  return { playBell, playWarning, playComboAlert };
 }

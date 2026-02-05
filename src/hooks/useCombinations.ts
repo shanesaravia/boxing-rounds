@@ -13,6 +13,7 @@ export function useCombinations() {
   const comboGroups = useTimerStore((state) => state.comboGroups);
 
   const [currentCombo, setCurrentCombo] = useState<string | null>(null);
+  const [lastCombo, setLastCombo] = useState<string | null>(null);
   const [isVisible, setIsVisible] = useState(false);
   const lastComboTimeRef = useRef(-1); // -1 means no combo shown yet this round
   const timeoutRef = useRef<number | null>(null);
@@ -32,7 +33,9 @@ export function useCombinations() {
   const showCombo = useCallback(() => {
     if (availableCombos.length === 0) return;
     const randomIndex = Math.floor(Math.random() * availableCombos.length);
-    setCurrentCombo(availableCombos[randomIndex]);
+    const combo = availableCombos[randomIndex];
+    setCurrentCombo(combo);
+    setLastCombo(combo);
     setIsVisible(true);
 
     // Hide after 2 seconds
@@ -88,6 +91,7 @@ export function useCombinations() {
       lastComboTimeRef.current = -1;
       setIsVisible(false);
       setCurrentCombo(null);
+      setLastCombo(null);
     }
   }, [status]);
 
@@ -100,5 +104,5 @@ export function useCombinations() {
     };
   }, []);
 
-  return { currentCombo, isVisible };
+  return { currentCombo, lastCombo, isVisible };
 }
