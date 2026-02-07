@@ -7,39 +7,45 @@ A modern, feature-rich boxing training timer built with React and TypeScript. Pe
 ## Features
 
 ### Timer Controls
+
 - **Start/Pause/Reset** - Full control over your training session
 - **Space Bar Support** - Quick start/pause without touching your device
 - **Keyboard Shortcuts** - `Space` to toggle, `R` or `Escape` to reset
 
 ### Configurable Rounds
+
 - **Round Count** - Set 1 to 20 rounds
 - **Round Duration** - 1 to 5 minutes per round
 - **Rest Duration** - 30 seconds to 2 minutes between rounds
 
 ### Audio Notifications
+
 - **Bell Sounds** - Clear audio cues at round/rest transitions
 - **Warning Alert** - Configurable warning beep (5-60 seconds before phase ends)
 - **Volume Control** - Adjust audio levels to your environment
 
 ### Combination Prompts
+
 Random boxing combination callouts during rounds to keep your training dynamic:
 
-| Number | Punch |
-|--------|-------|
-| 1 | Jab |
-| 2 | Cross |
-| 3 | Lead Hook |
-| 4 | Rear Hook |
-| 5 | Lead Uppercut |
-| 6 | Rear Uppercut |
+| Number | Punch         |
+| ------ | ------------- |
+| 1      | Jab           |
+| 2      | Cross         |
+| 3      | Lead Hook     |
+| 4      | Rear Hook     |
+| 5      | Lead Uppercut |
+| 6      | Rear Uppercut |
 
 **Combo Categories:**
+
 - **Basic** - Single punches and simple combos (1, 2, 1-1, 1-2)
 - **Standard** - Common combinations (1-2-3, 2-3-2, 1-2-3-2, etc.)
 - **With Defense** - Combos including slips and rolls (1-2-Slip-2, Roll-2-3-2, etc.)
 - **Long** - Extended combinations (1-2-3-4-5-6, 1-2-3-2-1-2)
 
 ### Visual Feedback
+
 - **Color-Coded Phases**
   - 🟢 Green - Active round
   - 🔵 Blue - Rest period
@@ -49,12 +55,15 @@ Random boxing combination callouts during rounds to keep your training dynamic:
 - **Round Counter** - Always know where you are in your workout
 
 ### Theme Support
+
 - **Dark Mode** - Easy on the eyes (default)
 - **Light Mode** - For bright environments
 - Toggle with a single click
 
 ### Settings Persistence
+
 All your preferences are automatically saved to your browser's local storage:
+
 - Timer configuration (rounds, durations)
 - Combo settings (enabled, interval, selected groups)
 - Theme preference
@@ -103,6 +112,7 @@ npm run preview  # Preview production build locally
 ## Usage
 
 1. **Configure Your Workout** - Click the gear icon to open settings
+
    - Set number of rounds
    - Adjust round and rest durations
    - Enable/disable combo prompts
@@ -111,6 +121,7 @@ npm run preview  # Preview production build locally
 2. **Start Training** - Press the Start button or hit `Space`
 
 3. **Follow the Timer** - The display shows:
+
    - Current phase (Round/Rest/Paused)
    - Time remaining
    - Current round number
@@ -123,31 +134,33 @@ npm run preview  # Preview production build locally
 
 ## Keyboard Shortcuts
 
-| Key | Action |
-|-----|--------|
-| `Space` | Start / Pause / Resume |
-| `R` | Reset timer |
-| `Escape` | Reset timer |
+| Key      | Action                 |
+| -------- | ---------------------- |
+| `Space`  | Start / Pause / Resume |
+| `R`      | Reset timer            |
+| `Escape` | Reset timer            |
 
 ## Configuration Options
 
 ### Timer Settings
-| Setting | Range | Default |
-|---------|-------|---------|
-| Number of Rounds | 1-20 | 12 |
-| Round Duration | 1-5 min | 3 min |
-| Rest Duration | 30s-2 min | 1 min |
-| Warning Sound | 5-60s | 30s |
+
+| Setting          | Range     | Default |
+| ---------------- | --------- | ------- |
+| Number of Rounds | 1-20      | 12      |
+| Round Duration   | 1-5 min   | 3 min   |
+| Rest Duration    | 30s-2 min | 1 min   |
+| Warning Sound    | 5-60s     | 30s     |
 
 ### Combo Settings
-| Setting | Range | Default |
-|---------|-------|---------|
-| Combo Prompts | On/Off | Off |
-| Combo Interval | 5s-3 min | 1 min |
-| Basic Combos | On/Off | On |
-| Standard Combos | On/Off | On |
-| Defense Combos | On/Off | On |
-| Long Combos | On/Off | On |
+
+| Setting         | Range    | Default |
+| --------------- | -------- | ------- |
+| Combo Prompts   | On/Off   | Off     |
+| Combo Interval  | 5s-3 min | 1 min   |
+| Basic Combos    | On/Off   | On      |
+| Standard Combos | On/Off   | On      |
+| Defense Combos  | On/Off   | On      |
+| Long Combos     | On/Off   | On      |
 
 ## Development
 
@@ -200,11 +213,3 @@ src/
 ├── index.css
 └── main.tsx
 ```
-
-## License
-
-ISC
-
-## Contributing
-
-Contributions are welcome! Please feel free to submit a Pull Request.
