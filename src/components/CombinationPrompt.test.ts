@@ -1,21 +1,7 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-
-// Test the addBodyShots utility function
-// We need to extract it or test it indirectly
+import { addBodyShots } from '../utils/comboUtils';
 
 describe('addBodyShots', () => {
-  // We'll import the function once it's exported
-  const addBodyShots = (combo: string): string => {
-    return combo
-      .split('-')
-      .map((part) => {
-        if (/^[1-6]$/.test(part) && Math.random() < 0.1) {
-          return part + 'b';
-        }
-        return part;
-      })
-      .join('-');
-  };
 
   beforeEach(() => {
     vi.restoreAllMocks();

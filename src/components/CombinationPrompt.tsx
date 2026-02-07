@@ -2,18 +2,7 @@ import { clsx } from 'clsx';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { useCombinations } from '../hooks/useCombinations';
 import { useSound } from '../hooks/useSound';
-
-function addBodyShots(combo: string): string {
-  return combo
-    .split('-')
-    .map((part) => {
-      if (/^[1-6]$/.test(part) && Math.random() < 0.1) {
-        return part + 'b';
-      }
-      return part;
-    })
-    .join('-');
-}
+import { addBodyShots } from '../utils/comboUtils';
 
 export function CombinationPrompt() {
   const { currentCombo, lastCombo, isVisible } = useCombinations();
